@@ -51,7 +51,7 @@ def get_token():
 
 def main():
     global TOKEN
-    from sys import argv
+    from sys import argv, stderr
     TOKEN = get_token()
     prog = argv[0].split(os.path.sep)[-1]
 
@@ -66,7 +66,7 @@ Available Commands:
   account         Display commands that retrieve account details
   server          Display commands that manage servers
 
-Use {prog} [command] --help for more information about a command.\n""")
+Use {prog} [command] --help for more information about a command.\n""", file=stderr)
         return 0
 
     if argv[1] == "account":
@@ -83,7 +83,7 @@ Available Commands:
   get             Retrieve account profile details
   keys            Retrieve SSH keys added to account
 
-Use {prog} account [command] --help for more information about a command.\n""")
+Use {prog} account [command] --help for more information about a command.\n""", file=stderr)
         elif argv[2] == "get":
             print(get("/account"))
         elif argv[2] == "keys":
@@ -102,21 +102,21 @@ Available Commands:
   info            Show info for a particular server, given the server's ID
   neighbors       List neighbors of a given server, given the server's ID. This command is aliased to `neighbours`.
 
-Use {prog} server [command] --help for more information about a command.\n""")
+Use {prog} server [command] --help for more information about a command.\n""", file=stderr)
         elif argv[2] == "list":
             print(get("/servers"))
         elif argv[2] == "info":
             if len(argv) == 3 or argv[3] == "--help":
                 print(f"""
 This command requires an argument: server_id
-{" ".join(argv[:2])} [server_id]\n""")
+{" ".join(argv[:2])} [server_id]\n""", file=stderr)
             else:
                 print(get(f"/servers/{argv[3]}"))
         elif argv[2] == "neighbors" or argv[2] == "neighbours":
             if len(argv) == 3 or argv[3] == "--help":
                 print(f"""
 This command requires an argument: server_id
-{" ".join(argv[:2])} [server_id]\n""")
+{" ".join(argv[:2])} [server_id]\n""", file=stderr)
             else:
                 print(get(f"/servers/{argv[3]}/neighbors"))
     return 0
