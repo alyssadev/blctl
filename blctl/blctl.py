@@ -49,6 +49,20 @@ def get_token():
     TOKEN = token
     return token
 
+def get_help_page(header="", usage="", available={}):
+    from sys import stderr
+    list_joiner = "\n  " # https://stackoverflow.com/a/67680321
+    print(f"""
+{header}
+
+Usage:
+  {usage}
+
+Additional Commands:
+  {list_joiner.join(f"{k}{' '*(15-len(k))} {v}" for k,v in available.items())}
+
+Use {usage} --help for more information about a command.\n""", file=stderr)
+
 def main():
     global TOKEN
     from sys import argv, stderr
@@ -56,34 +70,28 @@ def main():
     prog = argv[0].split(os.path.sep)[-1]
 
     if len(argv) == 1:
-        print(f"""
-{prog} is a command line interface (CLI) for the BinaryLane API.
-
-Usage:
-  {prog} [command]
-
-Available Commands:
-  account         Display commands that retrieve account details
-  server          Display commands that manage servers
-
-Use {prog} [command] --help for more information about a command.\n""", file=stderr)
+        get_help_page(
+            header=f"{prog} is a command line interface (CLI) for the BinaryLane API.",
+            usage=f"{prog} [command]",
+            available={
+                "account": "Display commands that retrieve account details",
+                "server": "Display commands that manage servers"
+            }
+        )
         return 0
 
     if argv[1] == "account":
         if len(argv) == 2 or argv[2] == "--help":
-            print(f"""
-The subcommands of `{prog} account` retrieve information about BinaryLane accounts.
+            get_help_page(
+                header=f"""The subcommands of `{prog} account` retrieve information about BinaryLane accounts.
 
-For example, `{prog} account get` retrieves account profile details, and `blctl account keys` retrieves account SSH keys.
-
-Usage:
-  {prog} account [command]
-
-Available Commands:
-  get             Retrieve account profile details
-  keys            Retrieve SSH keys added to account
-
-Use {prog} account [command] --help for more information about a command.\n""", file=stderr)
+For example, `{prog} account get` retrieves account profile details, and `blctl account keys` retrieves account SSH keys.""",
+                usage=f"{prog} account [command]",
+                available={
+                    "get": "Retrieve account profile details",
+                    "keys": "Retrieve SSH keys added to account"
+                }
+            )
         elif argv[2] == "get":
             print(get("/account"))
         elif argv[2] == "keys":
@@ -91,18 +99,15 @@ Use {prog} account [command] --help for more information about a command.\n""", 
 
     if argv[1] == "server":
         if len(argv) == 2 or argv[2] == "--help":
-            print(f"""
-The subcommands under `{prog} server` are for managing BinaryLane servers.
-
-Usage:
-  {prog} server [command]
-
-Available Commands:
-  list            List servers
-  info            Show info for a particular server, given the server's ID
-  neighbors       List neighbors of a given server, given the server's ID. This command is aliased to `neighbours`.
-
-Use {prog} server [command] --help for more information about a command.\n""", file=stderr)
+            get_help_page(
+                header=f"The subcommands under `{prog} server` are for managing BinaryLane servers.",
+                usage=f"{prog} server [command]",
+                available={
+                    "list": "List servers",
+                    "info": "Show info for a particular server, given the server's ID",
+                    "neighbors": "List neighbors of a given server, given the server's ID. This command is aliased to `neighbours`."
+                }
+            )
         elif argv[2] == "list":
             print(get("/servers"))
         elif argv[2] == "info":
